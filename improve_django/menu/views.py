@@ -24,7 +24,7 @@ def home(request):
 
 
 def menu_detail(request, pk):
-    menu = Menu.objects.get(pk=pk)
+    menu = get_object_or_404(Menu, pk=pk)
     return render(request, 'menu/menu_detail.html', {'menu': menu})
 
 
