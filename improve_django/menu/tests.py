@@ -41,6 +41,9 @@ class MenuListPageTestCase(TestCase):
 
         self.assertEqual(expected_length, result_length)
 
+    def test_return_layoutHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+
     def test_return_homeHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/home.html')
 
