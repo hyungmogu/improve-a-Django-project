@@ -7,19 +7,26 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
 
-def home(request):
-    all_menus = Menu.objects.all()
-    menus = []
-    for menu in all_menus:
-        if menu.expiration_date >= timezone.now():
-            menus.append(menu)
 
-    menus = sorted(menus, key=attrgetter('expiration_date'))
+def home(request):
+    all_menus = Menu.objects.order_by('expiration_date')
+    menus = []
+
+    for menu in all_menus:
+        if (
+            (menu.expiration_date is not None) and
+            (menu.expiration_date < timezone.now())
+        ):
+            continue
+        menus.append(menu)
+
     return render(request, 'menu/home.html', {'menus': menus})
+
 
 def menu_detail(request, pk):
     menu = Menu.objects.get(pk=pk)
     return render(request, 'menu/menu_detail.html', {'menu': menu})
+
 
 def item_detail(request, pk):
     try:
@@ -27,6 +34,7 @@ def item_detail(request, pk):
     except ObjectDoesNotExist:
         raise Http404
     return render(request, 'menu/detail_item.html', {'item': item})
+
 
 def create_new_menu(request):
     if request.method == "POST":
@@ -39,6 +47,7 @@ def create_new_menu(request):
     else:
         form = MenuForm()
     return render(request, 'menu/menu_edit.html', {'form': form})
+
 
 def edit_menu(request, pk):
     menu = get_object_or_404(Menu, pk=pk)
