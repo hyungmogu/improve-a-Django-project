@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
 
-def menu_list(request):
+def home(request):
     all_menus = Menu.objects.all()
     menus = []
     for menu in all_menus:
@@ -15,14 +15,14 @@ def menu_list(request):
             menus.append(menu)
 
     menus = sorted(menus, key=attrgetter('expiration_date'))
-    return render(request, 'menu/list_all_current_menus.html', {'menus': menus})
+    return render(request, 'menu/home.html', {'menus': menus})
 
 def menu_detail(request, pk):
     menu = Menu.objects.get(pk=pk)
     return render(request, 'menu/menu_detail.html', {'menu': menu})
 
 def item_detail(request, pk):
-    try: 
+    try:
         item = Item.objects.get(pk=pk)
     except ObjectDoesNotExist:
         raise Http404
