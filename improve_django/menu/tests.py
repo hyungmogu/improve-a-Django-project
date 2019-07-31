@@ -47,3 +47,40 @@ class MenuListPageTestCase(TestCase):
     def test_return_homeHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/home.html')
 
+
+class MenuDetailPageTestCase(TestCase):
+    def setUp(self):
+        self.menu1 = Menu.objects.create(
+            season='Menu 1',
+            expiration_date=datetime.datetime(
+                2019, 8, 23,
+                tzinfo=timezone.utc)
+        )
+
+        self.menu2 = Menu.objects.create(
+            season='Menu 2',
+            expiration_date=datetime.datetime(
+                2019, 9, 21,
+                tzinfo=timezone.utc)
+        )
+
+        self.resp = self.client.get('/menu/{0}/'.format(self.menu1.pk))
+
+    def test_return_status_okay(self):
+        expected = 200
+
+        result = self.resp.status_code
+
+        self.assertEqual(result, expected)
+
+    def test_return_layoutHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+
+    def test_return_menuDetailHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/menu_detail.html')
+
+    def test_return_menu1_on_visit(self):
+        self.assertContains(self.resp, self.menu1.season)
+
+    def test_return_only_one_item_on_visit(self):
+        self.assertNotContains(self.resp, self.menu2.season)
