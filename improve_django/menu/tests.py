@@ -7,6 +7,73 @@ from django.utils import timezone
 from .models import (Ingredient, Item, Menu)
 
 
+# MODEL TEST
+class IngredientModelTest(TestCase):
+    def setUp(self):
+        self.ingredient1 = Ingredient.objects.create(
+            name='Salami'
+        )
+
+        self.ingredient2 = Ingredient.objects.create(
+            name='Tomato'
+        )
+
+        self.ingredient3 = Ingredient.objects.create(
+            name='Egg'
+        )
+
+        self.ingredient4 = Ingredient.objects.create(
+            name='Cheddar Cheese'
+        )
+
+    def test_return_table_length_of_4(self):
+        expected = 4
+
+        result = Ingredient.objects.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_salami_given_pk_of_1(self):
+        expected = 'Salami'
+
+        ingredient = Ingredient.objects.get(pk=1)
+        result = ingredient.name
+
+        self.assertEqual(expected, result)
+
+    def test_return_salami_given_pk_of_2(self):
+        expected = 'Tomato'
+
+        ingredient = Ingredient.objects.get(pk=2)
+        result = ingredient.name
+
+        self.assertEqual(expected, result)
+
+    def test_return_egg_given_pk_of_3(self):
+        expected = 'Egg'
+
+        ingredient = Ingredient.objects.get(pk=3)
+        result = ingredient.name
+
+        self.assertEqual(expected, result)
+
+    def test_return_egg_given_pk_of_4(self):
+        expected = 'Cheddar Cheese'
+
+        ingredient = Ingredient.objects.get(pk=4)
+        result = ingredient.name
+
+        self.assertEqual(expected, result)
+
+    def test_return_name_when_type_casted_with_str(self):
+        expected = 'Salami'
+
+        ingredient = Ingredient.objects.get(pk=1)
+        result = str(ingredient)
+
+        self.assertEqual(expected, result)
+
+
 # VIEW TEST
 class MenuListPageTestCase(TestCase):
     '''Tests for the Home page view'''
