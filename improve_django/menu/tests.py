@@ -141,7 +141,7 @@ class MenuDetailPageTestCase(TestCase):
 
         self.assertEqual(expected, result)
 
-    def test_return_status_404(self):
+    def test_return_status_404_if_menu_not_found(self):
         expected = 404
 
         temp = self.client.get('/menu/1000/')
@@ -188,6 +188,14 @@ class ItemDetailPageTestCase(TestCase):
         result = self.resp.status_code
 
         self.assertEqual(result, expected)
+
+    def test_return_status_404_if_item_not_found(self):
+        expected = 404
+
+        temp = self.client.get('/menu/item/1000/')
+        result = temp.status_code
+
+        self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/layout.html')
