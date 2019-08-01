@@ -145,7 +145,7 @@ class MenuDetailPageTestCase(TestCase):
         expected = 404
 
         temp = self.client.get('/menu/1000/')
-        result = self.resp.status_code
+        result = temp.status_code
 
         self.assertEqual(expected, result)
 
@@ -160,3 +160,4 @@ class MenuDetailPageTestCase(TestCase):
 
     def test_return_only_one_item_on_visit(self):
         self.assertNotContains(self.resp, self.menu2.season)
+
