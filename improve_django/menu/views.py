@@ -43,7 +43,7 @@ def create_new_menu(request):
             return redirect('menu_detail', pk=menu.pk)
     else:
         form = MenuForm()
-    return render(request, 'menu/menu_edit.html', {'form': form})
+    return render(request, 'menu/menu_create.html', {'form': form})
 
 
 def edit_menu(request, pk):
