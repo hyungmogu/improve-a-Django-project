@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
@@ -138,7 +139,15 @@ class MenuDetailPageTestCase(TestCase):
 
         result = self.resp.status_code
 
-        self.assertEqual(result, expected)
+        self.assertEqual(expected, result)
+
+    def test_return_status_404(self):
+        expected = 404
+
+        temp = self.client.get('/menu/1000/')
+        result = self.resp.status_code
+
+        self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/layout.html')
