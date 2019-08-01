@@ -30,7 +30,7 @@ def menu_detail(request, pk):
 
 def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
-    return render(request, 'menu/detail_item.html', {'item': item})
+    return render(request, 'menu/item_detail.html', {'item': item})
 
 
 def create_new_menu(request):
