@@ -161,3 +161,43 @@ class MenuDetailPageTestCase(TestCase):
     def test_return_only_one_item_on_visit(self):
         self.assertNotContains(self.resp, self.menu2.season)
 
+
+class ItemDetailPageTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.resp = self.client.get('/menu/item/{0}/'.format(self.item1.pk))
+
+    def test_return_status_okay(self):
+        expected = 200
+
+        result = self.resp.status_code
+
+        self.assertEqual(result, expected)
+
+    def test_return_layoutHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+
+    def test_return_itemDetailHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/item_detail.html')
+
+    def test_return_item1_on_visit(self):
+        self.assertContains(self.resp, self.item1.name)
+
+    def test_return_only_one_item_on_visit(self):
+        self.assertNotContains(self.resp, self.item2.name)
+
