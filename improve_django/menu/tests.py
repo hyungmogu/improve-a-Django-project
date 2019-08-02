@@ -10,7 +10,7 @@ from .forms import MenuForm
 
 
 # MODEL TEST
-class IngredientModelTest(TestCase):
+class IngredientModelTestCase(TestCase):
     def setUp(self):
         self.ingredient1 = Ingredient.objects.create(
             name='Salami'
@@ -336,3 +336,53 @@ class CreateNewMenuPageTestCase(TestCase):
     def test_return_itemDetailHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/menu_create.html')
 
+
+class CreateNewMenuPagePOSTRequestTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+    def test_return_menu_detail_page_if_successful(self):
+        response = self.client.post('/menu/new/', {
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '06/12/2019'
+        })
+
+        self.assertRedirects(response, reverse('menu_detail', kwargs={'pk': 1,}), fetch_redirect_response=False)
+
+    def test_return_menu_with_length_1_if_successful(self):
+        expected = 1
+
+        response = self.client.post('/menu/new/',  {
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '06/12/2019'
+        })
+
+        result = Menu.objects.all().count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_menu_create_page_if_not_successful(self):
+        expected = 'New Menu'
+
+        response = self.client.post('/menu/new/',  {
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '06-12-2019'
+        })
+
+        self.assertContains(response, expected)
