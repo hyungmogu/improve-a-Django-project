@@ -388,7 +388,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
         self.assertContains(response, expected)
 
 
-class CreateNewMenuPageGETRequestTestCase(TestCase):
+class EditMenuPageGETRequestTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
         self.menu1 = Menu.objects.create(
@@ -442,3 +442,95 @@ class CreateNewMenuPageGETRequestTestCase(TestCase):
         response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
 
         self.assertTemplateUsed(response, expected)
+
+
+class EditMenuPagePOSTRequestTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.menu1 = Menu.objects.create(
+            season='Menu 1',
+            expiration_date=datetime.datetime(
+                2019, 8, 23,
+                tzinfo=timezone.utc)
+        )
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+    def test_return_back_to_menu_edit_page_if_successful(self):
+        expected = 'Edit Menu'
+
+        response = self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        self.assertContains(response, expected)
+
+    def test_retrun_menu_with_season_hi_if_edit_successful(self):
+        expected = 'hi'
+
+        self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.season
+
+        self.assertEqual(expected, result)
+
+    def test_return_menu_with_exp_date_06112019_if_edit_successful(self):
+        expected = '06/11/2019'
+
+        self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.expiration_date
+
+        self.assertEqual(expected, result)
+
+
+    def test_return_menu_with_items_of_length_2_if_edit_successful(self):
+        expected = 2
+
+        self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.items.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_back_to_menu_edit_page_if_not_successful(self):
+        expected = 'Edit Menu'
+
+        response = self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '31-12-2019'
+        })
+
+        self.assertContains(response, expected)
+
+
