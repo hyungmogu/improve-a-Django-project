@@ -308,7 +308,7 @@ class ItemDetailPageTestCase(TestCase):
         self.assertNotContains(self.resp, self.item2.name)
 
 
-class CreateNewMenuPageTestCase(TestCase):
+class CreateNewMenuPageGETRequestTestCase(TestCase):
     def setUp(self):
         self.resp = self.client.get('/menu/new/')
 
@@ -386,3 +386,59 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
         })
 
         self.assertContains(response, expected)
+
+
+class CreateNewMenuPageGETRequestTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.menu1 = Menu.objects.create(
+            season='Menu 1',
+            expiration_date=datetime.datetime(
+                2019, 8, 23,
+                tzinfo=timezone.utc)
+        )
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+    def test_return_status_okay_if_logged_in(self):
+        expected = 200
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
+        result = response.status_code
+
+        self.assertEqual(result, expected)
+
+    # def test_404_if_not_logged_in(self):
+    #     expected = 404
+
+    #     response = self.client.get(reverse('menu_new'))
+    #     result = response.status_code
+
+    #     self.assertEqual(expected, result)
+
+    def test_return_layoutHtml_as_template_used(self):
+        expected = 'menu/layout.html'
+
+        response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
+
+        self.assertTemplateUsed(response, expected)
+
+    def test_return_itemDetailHtml_as_template_used(self):
+        expected= 'menu/menu_edit.html'
+
+        response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
+
+        self.assertTemplateUsed(response, expected)
