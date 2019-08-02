@@ -209,3 +209,31 @@ class ItemDetailPageTestCase(TestCase):
     def test_return_only_one_item_on_visit(self):
         self.assertNotContains(self.resp, self.item2.name)
 
+
+class CreateNewMenuPageTestCase(TestCase):
+    def setUp(self):
+        self.resp = self.client.get('/menu/new/')
+
+    def test_return_status_okay_if_logged_in(self):
+        expected = 200
+
+        User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('menu_new'))
+        result = response.status_code
+
+        self.assertEqual(result, expected)
+
+    # def test_404_if_not_logged_in(self):
+    #     expected = 404
+
+    #     response = self.client.get(reverse('menu_new'))
+    #     result = response.status_code
+
+    #     self.assertEqual(expected, result)
+
+    def test_return_layoutHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+
+    def test_return_itemDetailHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/menu_create.html')
