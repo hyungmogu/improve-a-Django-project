@@ -8,9 +8,11 @@ class MenuForm(forms.ModelForm):
         queryset=Item.objects,
         error_messages={'required': 'Please select at least one item'}
     )
+
     expiration_date = forms.DateTimeField(
         error_messages={'invalid': 'Please enter date in the format MM/DD/YYYY'}
     )
+
     class Meta:
         model = Menu
         exclude = ('created_date',)

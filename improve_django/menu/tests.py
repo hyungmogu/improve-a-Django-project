@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from .models import (Ingredient, Item, Menu)
+from .forms import MenuForm
 
 
 # MODEL TEST
@@ -74,6 +75,103 @@ class IngredientModelTest(TestCase):
 
         self.assertEqual(expected, result)
 
+
+# FORM TEST
+class MenuFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+    def test_return_form_invalid_if_season_name_is_not_filled(self):
+        expected = False
+
+        form = MenuForm({
+            'items': ['1','2'],
+            'expiration_date': '06/12/2019'
+        })
+
+        result = form.is_valid()
+
+        self.assertEqual(expected, result)
+
+    def test_return_form_invalid_if_item_selected_is_empty(self):
+        expected = False
+
+        form = MenuForm({
+            'season': 'hello',
+            'expiration_date': '06/12/2019'
+        })
+
+        result = form.is_valid()
+
+        self.assertEqual(expected, result)
+
+    def test_return_form_invalid_if_date_is_not_filled(self):
+        expected = False
+
+        form = MenuForm({
+            'season': 'hello',
+            'items': ['1','2']
+        })
+
+        result = form.is_valid()
+
+        self.assertEqual(expected, result)
+
+    def test_return_form_invalid_if_date_format_is_not_MMDDYYYY(self):
+        expected = False
+
+        form1 = MenuForm({
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '31/12/2019'
+        })
+
+        result1 = form1.is_valid()
+
+        form2 = MenuForm({
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '2019/12/31'
+        })
+
+        result2 = form2.is_valid()
+
+
+        form3 = MenuForm({
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '31-12-2019'
+        })
+
+        result3 = form3.is_valid()
+
+        self.assertEqual(expected, result1)
+        self.assertEqual(expected, result2)
+
+    def test_return_form_valid_when_all_are_correct(self):
+        expected = True
+
+        form = MenuForm(data={
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '06/12/2019'
+        })
+        result = form.is_valid()
+
+        self.assertEqual(expected, result)
 
 # VIEW TEST
 class MenuListPageTestCase(TestCase):
@@ -237,3 +335,4 @@ class CreateNewMenuPageTestCase(TestCase):
 
     def test_return_itemDetailHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/menu_create.html')
+
