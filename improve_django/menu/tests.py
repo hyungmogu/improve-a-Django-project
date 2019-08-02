@@ -503,7 +503,7 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
         })
 
         menu = Menu.objects.get(pk=1)
-        result = menu.expiration_date
+        result = menu.expiration_date.strftime("%m/%d/%Y")
 
         self.assertEqual(expected, result)
 
