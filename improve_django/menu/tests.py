@@ -376,6 +376,49 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
 
         self.assertEqual(expected, result)
 
+    def test_retrun_menu_with_season_hi_if_successful(self):
+        expected = 'hi'
+
+        self.client.post('/menu/new/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.season
+
+        self.assertEqual(expected, result)
+
+    def test_return_menu_with_exp_date_06112019_if_successful(self):
+        expected = '06/11/2019'
+
+        self.client.post('/menu/new/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.expiration_date.strftime("%m/%d/%Y")
+
+        self.assertEqual(expected, result)
+
+
+    def test_return_menu_with_items_of_length_2_if_successful(self):
+        expected = 2
+
+        self.client.post('/menu/new/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.items.count()
+
+        self.assertEqual(expected, result)
+
     def test_return_menu_create_page_if_not_successful(self):
         expected = 'New Menu'
 
