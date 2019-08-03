@@ -1,15 +1,15 @@
 """
 TODO LIST FOR ACCOUNTS APP (TESTS)
 
-[]: 1) Add test for user model
+[x]: 1) Add tests for user model
     - given 2 users, with 1 of format {username:"hello", password: "hello"}, and the other
     {username: "world", password: "world"},
-        []: user model returns query count of 2
-        []: user model with pk == 1 has name "hello" and password "hello"
-        []: user model with pk == 2 has name "world" and password "hello"
-        []: type casting a queried item returns username
+        [x]: user model returns query count of 2
+        [x]: user model with pk == 1 has name "hello" and password "hello"
+        [x]: user model with pk == 2 has name "world" and password "hello"
+        [x]: type casting a queried item returns username
 
-[x]: 2) Add test for /accounts/login
+[x]: 2) Add tests for /accounts/login
     GET REQUEST
         [x]: returns status 200 (okay) on visit
         [x]: uses layout.html as template
@@ -20,7 +20,7 @@ TODO LIST FOR ACCOUNTS APP (TESTS)
         [x]: When not successful, and username is incorrect, user is sent back to sign_in_page
         [x]: When successful, user is redirected to home page
 
-[x]: 3) Add test for /accounts/sign_up
+[x]: 3) Add tests for /accounts/sign_up
     GET REQUEST
         [x]: returns status 200 on visit
         [x]: uses layout.html as template
@@ -32,7 +32,7 @@ TODO LIST FOR ACCOUNTS APP (TESTS)
         [x]: When successful, user model has total query count of 1
         [x]: When successful, user is redirected to home page
 
-[x]: 4) Add test for /accounts/logout
+[x]: 4) Add tests for /accounts/logout
     [x]: When successful, user is redirected to home page
     [x]: When successful, message 'You've been signed out. Come back soon!' is returned
 
@@ -42,6 +42,55 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 # Create your tests here.
+
+# MODEL TESTS
+class UserModelTestCase(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create(
+            username='hello',
+            password='hello'
+        )
+
+        self.user2 = User.objects.create(
+            username='world',
+            password='world'
+        )
+
+    def test_return_user_model_with_query_count_of_2(self):
+        expected = 2
+
+        result = User.objects.all().count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_hello_as_username_and_password_when_queried_with_pk_of_1(self):
+        expected_username = 'hello'
+        expected_password = 'hello'
+
+        user = User.objects.get(pk=1)
+        result_username = user.username
+        result_password = user.password
+
+        self.assertEqual(expected_username, result_username)
+        self.assertEqual(expected_password, result_password)
+
+    def test_return_world_as_username_and_password_when_queried_with_pk_of_2(self):
+        expected_username = 'world'
+        expected_password = 'world'
+
+        user = User.objects.get(pk=2)
+        result_username = user.username
+        result_password = user.password
+
+        self.assertEqual(expected_username, result_username)
+        self.assertEqual(expected_password, result_password)
+
+    def test_return_username_when_queried_object_is_type_casted(self):
+        expected = 'hello'
+
+        result = str(User.objects.get(pk=1))
+
+        self.assertEqual(expected, result)
 
 # VIEW TESTS
 class LoginPageGETRequestTestCase(TestCase):
