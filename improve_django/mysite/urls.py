@@ -20,12 +20,13 @@ from . import settings
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'', include('menu.urls')),
 ]
 
-if settings.DEBUG:
-    import debug_toolbar
+# if settings.DEBUG:
+#     import debug_toolbar
 
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+#     urlpatterns = [
+#         url(r'^__debug__/', include(debug_toolbar.urls)),
+#     ] + urlpatterns
