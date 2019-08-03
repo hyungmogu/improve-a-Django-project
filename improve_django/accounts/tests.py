@@ -3,21 +3,32 @@ TODO LIST FOR ACCOUNTS APP (TESTS)
 
 []: 1) Add test for user model
 
-[]: 2) Add test for /accounts/login
+[x]: 2) Add test for /accounts/login
     GET REQUEST
         [x]: returns status 200 (okay) on visit
         [x]: uses layout.html as template
         [x]: uses /accounts/sign_in.html as template
 
     POST REQUEST
-        [x]: if not successful and password is incorrect, user is sent back to sign_in page
-        [x]: if not successful, username is incorrect, user is sent back to sign_in_page
-        [x]: if successful, user is redirected to home page
+        [x]: When not successful and password is incorrect, user is sent back to sign_in page
+        [x]: When not successful, and username is incorrect, user is sent back to sign_in_page
+        [x]: When successful, user is redirected to home page
 
 []: 3) Add test for /accounts/sign_up
+    GET REQUEST
+        []: returns status 200 on visit
+        []: uses layout.html as template
+        []: uses sign_up.html as template
 
-[]: 4) Add test for /accounts/logout
-    []:
+    POST REQUEST
+        []: When unsuccessful, user is sent back to sign up page
+        []: When successful, message "You're now a user! You've been signed in, too." is returned
+        []: When successful, user model has total query count of 1
+        []: When successful, user is redirected to home page
+
+[x]: 4) Add test for /accounts/logout
+    [x]: When successful, user is redirected to home page
+    [x]: When successful, message 'You've been signed out. Come back soon!' is returned
 
 """
 from django.test import TestCase
@@ -87,3 +98,34 @@ class LoginPagePOSTRequestTestCase(TestCase):
 
         self.assertTemplateUsed(response, 'layout.html')
         self.assertTemplateUsed(response, 'accounts/sign_in.html')
+
+
+class LogoutPageTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('hello', 'hello@example.com', 'hello')
+        self.res_login = self.client.post(reverse('accounts:login'), {
+            'username': 'hello',
+            'password': 'hello'
+        })
+
+        self.res_logout = self.client.get(reverse('accounts:logout'))
+
+    def test_return_status_302_if_logout_successful(self):
+        expected = 302
+
+        result = self.res_logout.status_code
+
+        self.assertEqual(expected, result)
+
+    def test_return_home_page_if_logout_successful(self):
+        result = self.res_logout.status_code
+        self.assertRedirects(self.res_logout, reverse('home'), fetch_redirect_response=False)
+
+    def test_return_message_if_logout_successful(self):
+        expected = "You've been signed out. Come back soon!"
+
+        response = self.client.get(reverse('accounts:logout'), follow=True) # follow necesary to see messages
+        messages = list(response.context['messages'])
+        result = str(messages[0])
+
+        self.assertEqual(expected, result)
