@@ -7,7 +7,15 @@
     <body>
         <div class="page-header">
             {% if user.is_authenticated %}
-                <a href="{% url 'menu_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a>
+                <ul>
+                    <li><a href="{% url 'menu_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a></li>
+                    <li><a href="{% url 'accounts:sign_out' %}" class="top-menu">Sign Out</a></li>
+                </ul>
+            {% else %}
+                <ul>
+                    <li><a href="{% url 'accounts:sign_in' %}" class="top-menu">Sign In</a></li>
+                    <li><a href="{% url 'accounts:sign_up' %}" class="top-menu">Sign Up</a></li>
+                </ul>
             {% endif %}
             <h1><a href="/">Soda Fountain</a></h1>
         </div>
