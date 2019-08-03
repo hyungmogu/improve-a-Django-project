@@ -16,9 +16,9 @@ TODO LIST FOR ACCOUNTS APP (TESTS)
 
 []: 3) Add test for /accounts/sign_up
     GET REQUEST
-        []: returns status 200 on visit
-        []: uses layout.html as template
-        []: uses sign_up.html as template
+        [x]: returns status 200 on visit
+        [x]: uses layout.html as template
+        [x]: uses sign_up.html as template
 
     POST REQUEST
         []: When unsuccessful, user is sent back to sign up page
@@ -98,6 +98,28 @@ class LoginPagePOSTRequestTestCase(TestCase):
 
         self.assertTemplateUsed(response, 'layout.html')
         self.assertTemplateUsed(response, 'accounts/sign_in.html')
+
+
+class SignUpGETRequestTestCase(TestCase):
+    def setUp(self):
+        self.resp = self.client.get(reverse('accounts:sign_up'))
+
+    def test_returns_status_200_on_visit(self):
+        expected = 200
+
+        result = self.resp.status_code
+
+        self.assertEqual(expected, result)
+
+    def test_return_layoutHtml_as_template_used(self):
+        expected = 'layout.html'
+
+        self.assertTemplateUsed(self.resp, expected)
+
+    def test_return_signinHtml_as_template_used(self):
+        expected = 'accounts/sign_up.html'
+
+        self.assertTemplateUsed(self.resp, expected)
 
 
 class LogoutPageTestCase(TestCase):
