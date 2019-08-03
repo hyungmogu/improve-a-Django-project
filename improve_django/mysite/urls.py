@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 from . import settings
 
@@ -23,6 +25,9 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'', include('menu.urls')),
 ]
+
+# this is done to include css files
+urlpatterns += staticfiles_urlpatterns()
 
 # if settings.DEBUG:
 #     import debug_toolbar

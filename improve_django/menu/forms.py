@@ -6,7 +6,8 @@ from .models import Menu, Item, Ingredient
 class MenuForm(forms.ModelForm):
     items = forms.ModelMultipleChoiceField(
         queryset=Item.objects,
-        error_messages={'required': 'Please select at least one item'}
+        error_messages={'required': 'Please select at least one item'},
+        widget=forms.SelectMultiple(attrs={'class': 'width-100'})
     )
 
     expiration_date = forms.DateTimeField(
@@ -21,7 +22,8 @@ class MenuForm(forms.ModelForm):
 class ItemForm(forms.ModelForm):
     ingredients = forms.ModelMultipleChoiceField(
         queryset=Ingredient.objects,
-        error_messages={'required': 'Please select at least one ingredient'}
+        error_messages={'required': 'Please select at least one ingredient'},
+        widget=forms.SelectMultiple(attrs={'class': 'width-100'})
     )
 
     class Meta:
