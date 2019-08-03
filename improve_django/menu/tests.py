@@ -575,3 +575,41 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
         })
 
         self.assertContains(response, expected)
+
+
+class ItemListPageTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.resp = self.client.get('/menu/item/')
+
+    def test_return_status_okay(self):
+        self.assertEqual(self.resp.status_code, 200)
+
+    def test_return_length_2_as_number_of_items_on_page(self):
+        expected_length = 2
+
+        result_length = len(self.resp.context['items'])
+
+        self.assertEqual(expected_length, result_length)
+
+    def test_return_layoutHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'layout.html')
+
+    def test_return_itemListHtml_as_template_used(self):
+        self.assertTemplateUsed(self.resp, 'menu/item_list.html')
+
+
