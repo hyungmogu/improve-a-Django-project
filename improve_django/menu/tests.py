@@ -739,3 +739,238 @@ class ItemListPageTestCase(TestCase):
         self.assertTemplateUsed(self.resp, 'menu/item_list.html')
 
 
+"""
+
+TESTS FOR EDIT
+    GET Request
+        [x]: should return status 200
+        [x]: When on page, layout.html should be used
+        [x]: When on page, item_edit.html should be used
+    POST Request
+        [x]: When successful, the changed info should be reflected accordingly
+        [x]: When successful, user should be redirected to item detail page
+        [x]: When not successful, user should stay on the same page
+"""
+class EditItemPageGETRequestTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+
+        self.ingredient1 = Ingredient.objects.create(
+            name='Salami'
+        )
+
+        self.ingredient2 = Ingredient.objects.create(
+            name='Tomato'
+        )
+
+        self.ingredient3 = Ingredient.objects.create(
+            name='Egg'
+        )
+
+        self.ingredient4 = Ingredient.objects.create(
+            name='Cheddar Cheese'
+        )
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='this is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item1.ingredients.add(self.ingredient1)
+        self.item1.ingredients.add(self.ingredient2)
+        self.item1.ingredients.add(self.ingredient3)
+        self.item1.ingredients.add(self.ingredient4)
+
+    def test_return_status_okay_if_logged_in(self):
+        expected = 200
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('item_edit', kwargs={'pk': 1}))
+        result = response.status_code
+
+        self.assertEqual(result, expected)
+
+    def test_return_302_if_not_logged_in(self):
+        expected = 302
+
+        response = self.client.get(reverse('item_edit', kwargs={'pk': 1}))
+        result = response.status_code
+
+        self.assertEqual(expected, result)
+
+    def test_return_layoutHtml_as_template_used_if_logged_in(self):
+        expected = 'layout.html'
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('item_edit', kwargs={'pk': 1}))
+
+        self.assertTemplateUsed(response, expected)
+
+    def test_return_itemEditHtml_as_template_used_if_logged_in(self):
+        expected= 'menu/item_edit.html'
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('item_edit', kwargs={'pk': 1}))
+
+        self.assertTemplateUsed(response, expected)
+
+
+class EditItemPagePOSTRequestTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+
+        self.ingredient1 = Ingredient.objects.create(
+            name='Salami'
+        )
+
+        self.ingredient2 = Ingredient.objects.create(
+            name='Tomato'
+        )
+
+        self.ingredient3 = Ingredient.objects.create(
+            name='Egg'
+        )
+
+        self.ingredient4 = Ingredient.objects.create(
+            name='Cheddar Cheese'
+        )
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='this is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item1.ingredients.add(self.ingredient1)
+        self.item1.ingredients.add(self.ingredient2)
+        self.item1.ingredients.add(self.ingredient3)
+        self.item1.ingredients.add(self.ingredient4)
+
+    def test_return_302_if_try_to_edit_while_not_logged_in(self):
+        expected = 302
+
+        response = self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        })
+        result = response.status_code
+
+        self.assertEqual(expected, result)
+
+    def test_return_login_page_if_try_to_edit_while_not_logged_in(self):
+        expected = 'accounts/sign_in.html'
+
+        response = self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        }, follow=True)
+
+        self.assertTemplateUsed(response, expected)
+
+
+    def test_retrun_item_with_name_scrambled_egg_if_edit_successful(self):
+        expected = 'Scrambled Egg'
+
+        self.client.login(username='moe', password='12345')
+        self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        })
+
+        item = Item.objects.get(pk=1)
+        result = item.name
+
+        self.assertEqual(expected, result)
+
+
+    def test_return_item_with_ingredients_of_length_2_if_edit_successful(self):
+        expected = 2
+
+        self.client.login(username='moe', password='12345')
+        self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        })
+
+        item = Item.objects.get(pk=1)
+        result = item.ingredients.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_item_with_chef_laceywill_if_edit_successful(self):
+        expected = 'laceywill'
+
+        self.client.login(username='moe', password='12345')
+        self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        })
+
+        item = Item.objects.get(pk=1)
+        result = item.chef.username
+
+        self.assertEqual(expected, result)
+
+    def test_return_item_with_standard_as_true_if_edit_successful(self):
+        expected = True
+
+        self.client.login(username='moe', password='12345')
+        self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['2'],
+            'standard':True
+        })
+
+        item = Item.objects.get(pk=1)
+        result = item.standard
+
+        self.assertEqual(expected, result)
+
+    def test_return_back_to_item_detail_page_if_edit_successful(self):
+        expected = 'menu/item_detail.html'
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':['1'],
+            'standard':True
+        }, follow=True)
+
+        self.assertTemplateUsed(response, expected)
+
+
+    def test_return_item_edit_page_if_edit_not_successful(self):
+        expected = 'menu/item_edit.html'
+
+        self.client.login(username='moe', password='12345')
+        response = self.client.post(reverse('item_edit', kwargs={'pk':1}), {
+            'name': 'Scrambled Egg',
+            'ingredients': ['2','3'],
+            'description':'this is a delicious stuff',
+            'chef':2,
+            'standard':True
+        }, follow=True)
+
+        self.assertTemplateUsed(response, expected)
