@@ -10,9 +10,9 @@
                 <li><a href="{% url 'item_list' %}" class="top-menu">Items</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'menu_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a></li>
-                    <li><a href="{% url 'accounts:sign_out' %}" class="top-menu">Sign Out</a></li>
+                    <li><a href="{% url 'accounts:logout' %}" class="top-menu">Sign Out</a></li>
                 {% else %}
-                    <li><a href="{% url 'accounts:sign_in' %}" class="top-menu">Sign In</a></li>
+                    <li><a href="{% url 'accounts:login' %}" class="top-menu">Sign In</a></li>
                     <li><a href="{% url 'accounts:sign_up' %}" class="top-menu">Sign Up</a></li>
                 {% endif %}
             </ul>
