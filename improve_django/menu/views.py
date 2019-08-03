@@ -31,6 +31,11 @@ def item_detail(request, pk):
     item = get_object_or_404(Item, pk=pk)
     return render(request, 'menu/item_detail.html', {'item': item})
 
+def item_list(request):
+    items = Item.objects.order_by('name')
+    return render(request, 'menu/item_list.html', {'items': items})
+
+
 def create_new_menu(request):
     if request.method == "POST":
         form = MenuForm(request.POST)
