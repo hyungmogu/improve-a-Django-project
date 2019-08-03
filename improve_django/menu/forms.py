@@ -16,3 +16,14 @@ class MenuForm(forms.ModelForm):
     class Meta:
         model = Menu
         exclude = ('created_date',)
+
+
+class ItemForm(forms.ModelForm):
+    ingredients = forms.ModelMultipleChoiceField(
+        queryset=Ingredient.objects,
+        error_messages={'required': 'Please select at least one ingredient'}
+    )
+
+    class Meta:
+        model = Item
+        exclude = ('created_date',)

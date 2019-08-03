@@ -23,7 +23,6 @@ def home(request):
 
     return render(request, 'menu/home.html', {'menus': menus})
 
-
 def menu_detail(request, pk):
     menu = get_object_or_404(Menu, pk=pk)
     return render(request, 'menu/menu_detail.html', {'menu': menu})
@@ -64,5 +63,21 @@ def edit_menu(request, pk):
             form.save()
 
     return render(request, 'menu/menu_edit.html', {
+        'form': form
+        })
+
+@login_required
+def item_edit(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+
+    form = ItemForm(instance=item)
+
+    if request.method == "POST":
+        form = ItemForm(instance=item, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('item_detail', pk=pk)
+
+    return render(request, 'menu/item_edit.html', {
         'form': form
         })
