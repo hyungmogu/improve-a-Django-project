@@ -1,26 +1,42 @@
+{% load static from staticfiles %}
+
 <html>
     <head>
         <title>Soda Fountain</title>
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+        <!-- CSS
+        -------------------------------------------------------- -->
+        <link rel="stylesheet" href="{% static "css/global.css" %}">
     </head>
     <body>
-        <div class="page-header">
-            <ul>
-                <li><a href="{% url 'item_list' %}" class="top-menu">Items</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'menu_new' %}" class="top-menu"><span class="glyphicon glyphicon-plus"></span></a></li>
-                    <li><a href="{% url 'accounts:logout' %}" class="top-menu">Sign Out</a></li>
-                {% else %}
-                    <li><a href="{% url 'accounts:login' %}" class="top-menu">Sign In</a></li>
-                    <li><a href="{% url 'accounts:sign_up' %}" class="top-menu">Sign Up</a></li>
-                {% endif %}
-            </ul>
-             <h1><a href="/">Soda Fountain</a></h1>
+        <div class="header">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header"><a class="navbar-brand" href="/">Soda Fountain</a></div>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'accounts:logout' %}" class="top-menu">Sign Out</a></li>
+                        {% else %}
+                            <li><a href="{% url 'accounts:login' %}" class="top-menu">Sign In</a></li>
+                            <li><a href="{% url 'accounts:sign_up' %}" class="top-menu">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
         </div>
-        <div class="content container">
+        <div class="content container-fluid">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-2">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="{% url 'item_list' %}" class="top-menu">Menu Items</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'menu_new' %}" class="top-menu">Create a Menu</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-10">
                     {% block content %}{% endblock %}
                 </div>
             </div>
