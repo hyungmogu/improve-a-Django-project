@@ -76,6 +76,89 @@ class IngredientModelTestCase(TestCase):
         self.assertEqual(expected, result)
 
 
+class ItemModelTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+
+        self.ingredient1 = Ingredient.objects.create(
+            name='Salami'
+        )
+
+        self.ingredient2 = Ingredient.objects.create(
+            name='Tomato'
+        )
+
+        self.ingredient3 = Ingredient.objects.create(
+            name='Egg'
+        )
+
+        self.ingredient4 = Ingredient.objects.create(
+            name='Cheddar Cheese'
+        )
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item1.ingredients.add(self.ingredient1)
+        self.item1.ingredients.add(self.ingredient2)
+        self.item1.ingredients.add(self.ingredient3)
+        self.item1.ingredients.add(self.ingredient4)
+
+
+    def test_return_table_length_of_1(self):
+        expected = 1
+
+        result = Item.objects.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_omelette_given_pk_of_1(self):
+        expected = 'Omelette'
+
+        item = Item.objects.get(pk=1)
+        result = item.name
+
+        self.assertEqual(expected, result)
+
+    def test_return_pk_1_with_corresponding_description(self):
+        expected = 'Is a delicious stuff'
+
+        item = Item.objects.get(pk=1)
+        result = item.description
+
+        self.assertEqual(expected, result)
+
+
+    def test_return_pk_1_with_moe_as_chef(self):
+        expected = 'moe'
+
+        item = Item.objects.get(pk=1)
+        result = item.chef.username
+
+        self.assertEqual(expected, result)
+
+    def test_return_pk_1_with_length_of_4_for_ingredients(self):
+        expected = 4
+
+        item = Item.objects.get(pk=1)
+        result = item.ingredients.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_name_when_type_casted_with_str(self):
+        expected = 'Omelette'
+
+        menu = Item.objects.get(pk=1)
+        result = str(menu)
+
+        self.assertEqual(expected, result)
+
+
+
 class MenuModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
