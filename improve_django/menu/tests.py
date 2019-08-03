@@ -739,18 +739,6 @@ class ItemListPageTestCase(TestCase):
         self.assertTemplateUsed(self.resp, 'menu/item_list.html')
 
 
-"""
-
-TESTS FOR EDIT
-    GET Request
-        [x]: should return status 200
-        [x]: When on page, layout.html should be used
-        [x]: When on page, item_edit.html should be used
-    POST Request
-        [x]: When successful, the changed info should be reflected accordingly
-        [x]: When successful, user should be redirected to item detail page
-        [x]: When not successful, user should stay on the same page
-"""
 class EditItemPageGETRequestTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
@@ -819,7 +807,8 @@ class EditItemPageGETRequestTestCase(TestCase):
 
 class EditItemPagePOSTRequestTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+        self.user1 = User.objects.create_user('laceywill', 'laceywill@example.com', '12345')
+        self.user2 = User.objects.create_user('moe', 'moe@example.com', '12345')
 
         self.ingredient1 = Ingredient.objects.create(
             name='Salami'
@@ -840,7 +829,7 @@ class EditItemPagePOSTRequestTestCase(TestCase):
         self.item1 = Item.objects.create(
             name='Omelette',
             description='this is a delicious stuff',
-            chef=self.user,
+            chef=self.user2,
             standard=True
         )
 
@@ -969,7 +958,7 @@ class EditItemPagePOSTRequestTestCase(TestCase):
             'name': 'Scrambled Egg',
             'ingredients': ['2','3'],
             'description':'this is a delicious stuff',
-            'chef':2,
+            'chef':3,
             'standard':True
         }, follow=True)
 
