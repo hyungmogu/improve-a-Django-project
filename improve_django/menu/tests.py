@@ -76,6 +76,90 @@ class IngredientModelTestCase(TestCase):
         self.assertEqual(expected, result)
 
 
+class MenuModelTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('moe', 'moe@example.com', '12345')
+
+        self.item1 = Item.objects.create(
+            name='Omelette',
+            description='Is a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item2 = Item.objects.create(
+            name='Spaghetti',
+            description='this may be a delicious stuff',
+            chef=self.user,
+            standard=True
+        )
+
+        self.item3 = Item.objects.create(
+            name='Steak',
+            description='this could be a delicious food',
+            chef=self.user,
+            standard=True
+        )
+
+        self.menu1 = Menu.objects.create(
+            season='Menu 1',
+            expiration_date=datetime.datetime(
+                2019, 8, 23,
+                tzinfo=timezone.utc)
+        )
+        self.menu1.items.add(self.item1)
+        self.menu1.items.add(self.item2)
+
+        self.menu2 = Menu.objects.create(
+            season='Menu 1',
+            expiration_date=datetime.datetime(
+                2019, 8, 23,
+                tzinfo=timezone.utc)
+        )
+        self.menu2.items.add(self.item1)
+        self.menu2.items.add(self.item3)
+
+
+    def test_return_table_length_of_2(self):
+        expected = 2
+
+        result = Menu.objects.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_menu_1_given_pk_of_1(self):
+        expected = 'Menu 1'
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.season
+
+        self.assertEqual(expected, result)
+
+    def test_return_pk_1_with_08232019_as_exp_date(self):
+        expected = '08/23/2019'
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.expiration_date.strftime('%m/%d/%Y')
+
+        self.assertEqual(expected, result)
+
+    def test_return_pk_1_with_length_of_2_for_items(self):
+        expected = 2
+
+        menu = Menu.objects.get(pk=1)
+        result = menu.items.count()
+
+        self.assertEqual(expected, result)
+
+    def test_return_name_when_type_casted_with_str(self):
+        expected = 'Menu 1'
+
+        menu = Menu.objects.get(pk=1)
+        result = str(menu)
+
+        self.assertEqual(expected, result)
+
+
 # FORM TEST
 class MenuFormTestCase(TestCase):
     def setUp(self):
