@@ -394,31 +394,34 @@ class ItemDetailPageTestCase(TestCase):
 
 class CreateNewMenuPageGETRequestTestCase(TestCase):
     def setUp(self):
-        self.resp = self.client.get('/menu/new/')
+        User.objects.create_user('moe', 'moe@example.com', '12345')
 
     def test_return_status_okay_if_logged_in(self):
         expected = 200
 
-        User.objects.create_user('moe', 'moe@example.com', '12345')
         self.client.login(username='moe', password='12345')
         response = self.client.get(reverse('menu_new'))
         result = response.status_code
 
         self.assertEqual(result, expected)
 
-    # def test_404_if_not_logged_in(self):
-    #     expected = 404
+    def test_return_status_code_302_if_not_logged_in(self):
+        expected = 302
 
-    #     response = self.client.get(reverse('menu_new'))
-    #     result = response.status_code
+        response = self.client.get(reverse('menu_new'))
+        result = response.status_code
 
-    #     self.assertEqual(expected, result)
+        self.assertEqual(expected, result)
 
-    def test_return_layoutHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'layout.html')
+    def test_return_layoutHtml_as_template_used_if_logged_in(self):
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('menu_new'))
+        self.assertTemplateUsed(response, 'layout.html')
 
-    def test_return_itemDetailHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'menu/menu_create.html')
+    def test_return_itemDetailHtml_as_template_used_if_logged_in(self):
+        self.client.login(username='moe', password='12345')
+        response = self.client.get(reverse('menu_new'))
+        self.assertTemplateUsed(response, 'menu/menu_create.html')
 
 
 class CreateNewMenuPagePOSTRequestTestCase(TestCase):
@@ -438,7 +441,21 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
             standard=True
         )
 
+    def test_return_status_302_if_user_not_logged_in(self):
+        expected = 302
+
+        response = self.client.post('/menu/new/', {
+            'season': 'hello',
+            'items': ['1','2'],
+            'expiration_date': '06/12/2019'
+        })
+
+        result = response.status_code
+
+        self.assertEqual(expected, result)
+
     def test_return_menu_detail_page_if_successful(self):
+        self.client.login(username='moe', password='12345')
         response = self.client.post('/menu/new/', {
             'season': 'hello',
             'items': ['1','2'],
@@ -450,6 +467,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_with_length_1_if_successful(self):
         expected = 1
 
+        self.client.login(username='moe', password='12345')
         response = self.client.post('/menu/new/',  {
             'season': 'hello',
             'items': ['1','2'],
@@ -463,6 +481,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
     def test_retrun_menu_with_season_hi_if_successful(self):
         expected = 'hi'
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/new/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -477,6 +496,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_with_exp_date_06112019_if_successful(self):
         expected = '06/11/2019'
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/new/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -492,6 +512,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_with_items_of_length_2_if_successful(self):
         expected = 2
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/new/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -506,6 +527,7 @@ class CreateNewMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_create_page_if_not_successful(self):
         expected = 'New Menu'
 
+        self.client.login(username='moe', password='12345')
         response = self.client.post('/menu/new/',  {
             'season': 'hello',
             'items': ['1','2'],
@@ -548,24 +570,26 @@ class EditMenuPageGETRequestTestCase(TestCase):
 
         self.assertEqual(result, expected)
 
-    # def test_404_if_not_logged_in(self):
-    #     expected = 404
+    def test_return_302_if_not_logged_in(self):
+        expected = 302
 
-    #     response = self.client.get(reverse('menu_new'))
-    #     result = response.status_code
+        response = self.client.get(reverse('menu_new'))
+        result = response.status_code
 
-    #     self.assertEqual(expected, result)
+        self.assertEqual(expected, result)
 
-    def test_return_layoutHtml_as_template_used(self):
+    def test_return_layoutHtml_as_template_used_if_logged_in(self):
         expected = 'layout.html'
 
+        self.client.login(username='moe', password='12345')
         response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
 
         self.assertTemplateUsed(response, expected)
 
-    def test_return_itemDetailHtml_as_template_used(self):
+    def test_return_itemDetailHtml_as_template_used_if_logged_in(self):
         expected= 'menu/menu_edit.html'
 
+        self.client.login(username='moe', password='12345')
         response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
 
         self.assertTemplateUsed(response, expected)
@@ -595,9 +619,23 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
             standard=True
         )
 
+    def test_return_302_if_not_logged_in(self):
+        expected = 302
+
+        response = self.client.post('/menu/1/edit/', {
+            'season': 'hi',
+            'items': ['1','2'],
+            'expiration_date': '06/11/2019'
+        })
+        result = response.status_code
+
+        self.assertEqual(expected, result)
+
+
     def test_return_back_to_menu_edit_page_if_successful(self):
         expected = 'Edit Menu'
 
+        self.client.login(username='moe', password='12345')
         response = self.client.post('/menu/1/edit/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -609,6 +647,7 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
     def test_retrun_menu_with_season_hi_if_edit_successful(self):
         expected = 'hi'
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/1/edit/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -623,6 +662,7 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_with_exp_date_06112019_if_edit_successful(self):
         expected = '06/11/2019'
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/1/edit/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -638,6 +678,7 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
     def test_return_menu_with_items_of_length_2_if_edit_successful(self):
         expected = 2
 
+        self.client.login(username='moe', password='12345')
         self.client.post('/menu/1/edit/', {
             'season': 'hi',
             'items': ['1','2'],
@@ -649,9 +690,10 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
 
         self.assertEqual(expected, result)
 
-    def test_return_back_to_menu_edit_page_if_not_successful(self):
+    def test_return_back_to_menu_edit_page_if_loggedin_and_not_successful(self):
         expected = 'Edit Menu'
 
+        self.client.login(username='moe', password='12345')
         response = self.client.post('/menu/1/edit/', {
             'season': 'hi',
             'items': ['1','2'],
