@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 
-def login(request):
+def sign_in(request):
     form = AuthenticationForm()
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -52,7 +52,7 @@ def sign_up(request):
     return render(request, 'accounts/sign_up.html', {'form': form})
 
 
-def logout(request):
+def sign_out(request):
     logout(request)
     messages.success(request, "You've been signed out. Come back soon!")
     return HttpResponseRedirect(reverse('home'))
