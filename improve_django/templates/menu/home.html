@@ -2,20 +2,27 @@
 
 {% block content %}
     <div class="post">
-        {% if menu.expiration_date %}
-            <div class="date">
-                Expires on: {{ menu.expiration_date }}
-            </div>
-        {% endif %}
-
-        {% for menu in menus %}
-            <h1>
-                {% if user.is_authenticated %}
-                    <a class="btn btn-default" href="{% url 'menu_edit' pk=menu.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-                {% endif %}
-                <a href="{% url 'menu_detail' pk=menu.pk %}">{{ menu.season }}</a>
-            </h1>
-            <p>{{ menu.items.all|join:", "}}</p>
-        {% endfor %}
+        <div class="row">
+            {% for menu in menus %}
+                <div class="col-md-12">
+                    <div class="thumbnail">
+                        {% if menu.expiration_date %}
+                            <div class="date">
+                                Expires on: {{ menu.expiration_date }}
+                            </div>
+                        {% endif %}
+                        <div class="caption">
+                            <h3><a href="{% url 'menu_detail' pk=menu.pk %}">{{ menu.season }}</a></h3>
+                            <p>{{ menu.items.all|join:", "}}</p>
+                            <div>
+                                {% if user.is_authenticated %}
+                                    <a class="btn btn-success" href="{% url 'menu_edit' pk=menu.pk %}">Edit</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
