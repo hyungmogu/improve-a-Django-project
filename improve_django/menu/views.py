@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.utils import timezone
 from operator import attrgetter
@@ -35,7 +36,7 @@ def item_list(request):
     items = Item.objects.order_by('name')
     return render(request, 'menu/item_list.html', {'items': items})
 
-
+@login_required
 def create_new_menu(request):
     if request.method == "POST":
         form = MenuForm(request.POST)
@@ -51,6 +52,7 @@ def create_new_menu(request):
         form = MenuForm()
     return render(request, 'menu/menu_create.html', {'form': form})
 
+@login_required
 def edit_menu(request, pk):
     menu = get_object_or_404(Menu, pk=pk)
 
