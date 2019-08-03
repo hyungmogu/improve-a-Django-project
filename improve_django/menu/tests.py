@@ -208,7 +208,7 @@ class MenuListPageTestCase(TestCase):
         self.assertEqual(expected_length, result_length)
 
     def test_return_layoutHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+        self.assertTemplateUsed(self.resp, 'layout.html')
 
     def test_return_homeHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/home.html')
@@ -248,7 +248,7 @@ class MenuDetailPageTestCase(TestCase):
         self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+        self.assertTemplateUsed(self.resp, 'layout.html')
 
     def test_return_menuDetailHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/menu_detail.html')
@@ -296,7 +296,7 @@ class ItemDetailPageTestCase(TestCase):
         self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+        self.assertTemplateUsed(self.resp, 'layout.html')
 
     def test_return_itemDetailHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/item_detail.html')
@@ -331,7 +331,7 @@ class CreateNewMenuPageGETRequestTestCase(TestCase):
     #     self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
-        self.assertTemplateUsed(self.resp, 'menu/layout.html')
+        self.assertTemplateUsed(self.resp, 'layout.html')
 
     def test_return_itemDetailHtml_as_template_used(self):
         self.assertTemplateUsed(self.resp, 'menu/menu_create.html')
@@ -473,7 +473,7 @@ class EditMenuPageGETRequestTestCase(TestCase):
     #     self.assertEqual(expected, result)
 
     def test_return_layoutHtml_as_template_used(self):
-        expected = 'menu/layout.html'
+        expected = 'layout.html'
 
         response = self.client.get(reverse('menu_edit', kwargs={'pk': 1}))
 
@@ -575,5 +575,3 @@ class EditMenuPagePOSTRequestTestCase(TestCase):
         })
 
         self.assertContains(response, expected)
-
-
