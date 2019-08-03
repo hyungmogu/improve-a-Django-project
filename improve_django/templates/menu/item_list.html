@@ -2,10 +2,16 @@
 
 {% block content %}
     {% for item in items %}
-        <div>
-            <h1><a href="{% url 'item_detail' pk=item.pk %}">{{ item.name }}</a></h1>
-            <p>{{ item.description|linebreaks }}</p>
-            <p>published: {{ item.published_date }}</p>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h2><a href="{% url 'item_detail' pk=item.pk %}">{{ item.name }}</a></h2>
+                        <p>{{ item.description| linebreaks | truncatechars:300 }}</p>
+                        <p>published: {{ item.published_date }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     {% endfor %}
 {% endblock %}
