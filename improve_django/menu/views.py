@@ -1,10 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
 from django.utils import timezone
-from operator import attrgetter
-from datetime import datetime
-from django.core.exceptions import ObjectDoesNotExist
 from .models import *
 from .forms import *
 
