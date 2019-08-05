@@ -10,15 +10,17 @@ from .forms import *
 
 
 def home(request):
-    all_menus = Menu.objects.order_by('expiration_date')
+    all_menus = Menu.objects.prefetch_related('items').order_by('-expiration_date')
     menus = []
 
     for menu in all_menus:
+
         if (
             (menu.expiration_date is not None) and
             (menu.expiration_date < timezone.now())
         ):
             continue
+
         menus.append(menu)
 
     return render(request, 'menu/home.html', {'menus': menus})
@@ -76,8 +78,8 @@ def item_edit(request, pk):
         form = ItemForm(instance=item, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('item_detail', pk=pk)
 
+            return redirect('item_detail', pk=pk)
     return render(request, 'menu/item_edit.html', {
         'form': form
         })
